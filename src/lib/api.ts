@@ -88,6 +88,11 @@ async function request<T>(path: string, init: RequestInit = {}, token?: string |
 }
 
 export const api = {
+  /** Wakes the API up (free hosting plans put it to sleep when idle). Never throws. */
+  wakeUp: () =>
+    fetch(`${API_URL}/health`)
+      .then(() => undefined)
+      .catch(() => undefined),
   login: (email: string, password: string) =>
     request<Session>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   register: (name: string, email: string, password: string) =>

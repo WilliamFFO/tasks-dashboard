@@ -89,7 +89,12 @@ tests/                  Vitest tests
 
 ## Deploy
 
-On Vercel, import the repository and set `NEXT_PUBLIC_API_URL` to the URL of your deployed API. Then set the API's `CORS_ORIGIN` to the URL Vercel gives you.
+The dashboard is exported as a static site (`output: 'export'`), so it can live on any static host.
+
+- **GitHub Pages (this repository):** `.github/workflows/deploy.yml` lints, tests, builds and publishes on every push to `main`. Set the repository variable `API_URL` (Settings > Secrets and variables > Actions > Variables) to the URL of the deployed [Task Manager API](https://github.com/WilliamFFO/task-manager-api), and set the API's `CORS_ORIGIN` to `https://<user>.github.io`.
+- **Vercel / Netlify:** import the repository and set `NEXT_PUBLIC_API_URL`; the output folder is `out`.
+
+The API runs on a free plan that sleeps when idle, so the login page wakes it up in the background and tells the user when the first request is slow.
 
 ## License
 

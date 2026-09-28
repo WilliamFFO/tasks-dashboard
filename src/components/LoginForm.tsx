@@ -29,10 +29,26 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [slow, setSlow] = useState(false);
 
   useEffect(() => {
     if (ready && session) router.replace('/');
   }, [ready, session, router]);
+
+  // Start waking the API up as soon as the page opens, so it is ready by the time the form is sent.
+  useEffect(() => {
+    void api.wakeUp();
+  }, []);
+
+  // The API runs on a free plan that sleeps when idle; tell people why the first request can take a while.
+  useEffect(() => {
+    if (!busy) {
+      setSlow(false);
+      return;
+    }
+    const timer = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(timer);
+  }, [busy]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,6 +94,9 @@ export function LoginForm() {
 
         <form onSubmit={submit} className="grid gap-4" noValidate={false}>
           {error && <Alert severity="error">{error}</Alert>}
+          {slow && (
+            <Alert severity="info">The server is waking up after being idle. The first request can take up to a minute.</Alert>
+          )}
           {isRegister && (
             <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" slotProps={{ htmlInput: { minLength: 2 } }} />
           )}
